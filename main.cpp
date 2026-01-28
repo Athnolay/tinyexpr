@@ -1,24 +1,29 @@
 #include "tinyexpr.h"
 #include <stdio.h>
+#include <iostream>
+using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2) {
-        printf("Usage: example2 \"expression\"\n");
-        return 0;
-    }
+    // if (argc < 2) {
+    //     printf("Usage: example2 \"expression\"\n");
+    //     return 0;
+    // }
 
-    const char *expression = argv[1];
+    const char *expression = "x + 2 * y + z";
     printf("Evaluating:\n\t%s\n", expression);
 
     /* This shows an example where the variables
      * x and y are bound at eval-time. */
     double x, y;
-    te_variable vars[] = {{"x", &x}, {"y", &y}};
+    te_variable vars[] = {{"x", &x, TE_VARIABLE}, {"y", &y, TE_VARIABLE}};
 
     /* This will compile the expression and check for errors. */
     int err;
     te_expr *n = te_compile(expression, vars, 2, &err);
+    // cout << "----------------------" << endl;
+    // te_print(n);
+    // cout << "----------------------" << endl;
 
     if (n) {
         /* The variables can be changed here, and eval can be called as many
