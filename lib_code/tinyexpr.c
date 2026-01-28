@@ -72,6 +72,7 @@ typedef struct state {
 
     const te_variable *lookup;
     int lookup_len;
+    char *err_token;
 } state;
 
 
@@ -252,16 +253,19 @@ void next_token(state *s) {
             s->type = TOK_NUMBER;
         } else {
             /* Look for a variable or builtin function call. */
-            if (isalpha(s->next[0])) {
+            if (isalpha(s->next[0]) || s->next[0] == '_') {
                 const char *start;
                 start = s->next;
-                while (isalpha(s->next[0]) || isdigit(s->next[0]) || (s->next[0] == '_')) s->next++;
+                while (isalpha(s->next[0]) || isdigit(s->next[0]) || s->next[0] == '_' || s->next[0] == '$') s->next++;
                 
                 const te_variable *var = find_lookup(s, start, s->next - start);
                 if (!var) var = find_builtin(start, s->next - start);
 
                 if (!var) {
                     s->type = TOK_ERROR;
+                    s->err_token = (char *)malloc(sizeof(sizeof(char) * (s->next - start + 1)));
+                    strncpy(s->err_token, start, s->next - start);
+                    s->err_token[s->next - start] = '\0';
                 } else {
                     switch(TYPE_MASK(var->type))
                     {
@@ -662,11 +666,12 @@ static void optimize(te_expr *n) {
 }
 
 
-te_expr *te_compile(const char *expression, const te_variable *variables, int var_count, int *error) {
+te_expr *te_compile(const char *expression, const te_variable *variables, int var_count, int *error, char **err_token) {
     state s;
     s.start = s.next = expression;
     s.lookup = variables;
     s.lookup_len = var_count;
+    s.err_token = NULL;
 
     next_token(&s);
     te_expr *root = list(&s);
@@ -680,6 +685,7 @@ te_expr *te_compile(const char *expression, const te_variable *variables, int va
         if (error) {
             *error = (s.next - s.start);
             if (*error == 0) *error = 1;
+            *err_token = s.err_token;
         }
         return 0;
     } else {
@@ -691,7 +697,12 @@ te_expr *te_compile(const char *expression, const te_variable *variables, int va
 
 
 double te_interp(const char *expression, int *error) {
-    te_expr *n = te_compile(expression, 0, 0, error);
+    char *err_token;
+    te_expr *n = te_compile(expression, 0, 0, error, &err_token);
+    if (!err_token)
+    {
+        free(err_token);
+    }
 
     double ret;
     if (n) {

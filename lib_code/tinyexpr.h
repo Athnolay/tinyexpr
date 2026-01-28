@@ -67,7 +67,9 @@ double te_interp(const char *expression, int *error);
 
 /* Parses the input expression and binds variables. */
 /* Returns NULL on error. */
-te_expr *te_compile(const char *expression, const te_variable *variables, int var_count, int *error);
+
+/* Add feature, err_token. You need to release it yourself. */
+te_expr *te_compile(const char *expression, const te_variable *variables, int var_count, int *error, char **err_token);
 
 /* Evaluates the expression. */
 double te_eval(const te_expr *n);
