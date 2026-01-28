@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     //     return 0;
     // }
 
-    const char *expression = "x + 2 * y + _z";
+    // const char *expression = "x + 2 * y + _z";
+    const char *expression = "ABS(x - 2 * y)";
     // const char *expression = "x + 2 * y";
     printf("Evaluating:\n\t%s\n", expression);
 
