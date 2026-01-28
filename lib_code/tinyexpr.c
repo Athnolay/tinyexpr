@@ -697,13 +697,8 @@ te_expr *te_compile(const char *expression, const te_variable *variables, int va
 }
 
 
-double te_interp(const char *expression, int *error) {
-    char *err_token;
-    te_expr *n = te_compile(expression, 0, 0, error, &err_token);
-    if (!err_token)
-    {
-        free(err_token);
-    }
+double te_interp(const char *expression, int *error, char **err_token) {
+    te_expr *n = te_compile(expression, 0, 0, error, err_token);
 
     double ret;
     if (n) {

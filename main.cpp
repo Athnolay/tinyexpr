@@ -24,6 +24,15 @@ int main(int argc, char *argv[])
     int err;
     char *err_token = NULL;
     te_expr *n = te_compile(expression, vars, sizeof(vars) / sizeof(te_variable), &err, &err_token);
+
+    // double result = te_interp("ABs(1-2)", &err, &err_token);
+    // cout << result << endl;
+    // if (err_token)
+    // {
+    //     printf("\tThe error token is %s\n", err_token);
+    //     free(err_token);
+    // }
+    
     // cout << "----------------------" << endl;
     // te_print(n);
     // cout << "----------------------" << endl;
